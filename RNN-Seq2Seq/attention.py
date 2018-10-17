@@ -57,7 +57,7 @@ class Decoder:
             probs.append(prob)
 
         if(inference):
-            return probs[0], s, c 
+            return probs[-1], s, c # Get the last prob, hidden_state, cell_state
         else:
             return probs
 
