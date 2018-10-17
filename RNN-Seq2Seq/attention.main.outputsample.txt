@@ -1,0 +1,964 @@
+
+D:\cygwin64\home\trule\Notebook\LML\RNN-Seq2Seq>python attention.main.py
+C:\ProgramData\Anaconda3\lib\site-packages\h5py\__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
+  from ._conv import register_converters as _register_converters
+Using TensorFlow backend.
+2018-10-17 23:26:27.443653: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX AVX2
+2018-10-17 23:26:27.704950: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1405] Found device 0 with properties:
+name: TITAN X (Pascal) major: 6 minor: 1 memoryClockRate(GHz): 1.531
+pciBusID: 0000:02:00.0
+totalMemory: 12.00GiB freeMemory: 9.95GiB
+2018-10-17 23:26:27.716602: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1484] Adding visible gpu devices: 0
+2018-10-17 23:26:28.398942: I tensorflow/core/common_runtime/gpu/gpu_device.cc:965] Device interconnect StreamExecutor with strength 1 edge matrix:
+2018-10-17 23:26:28.405259: I tensorflow/core/common_runtime/gpu/gpu_device.cc:971]      0
+2018-10-17 23:26:28.409697: I tensorflow/core/common_runtime/gpu/gpu_device.cc:984] 0:   N
+2018-10-17 23:26:28.413983: I tensorflow/core/common_runtime/gpu/gpu_device.cc:1097] Created TensorFlow device (/job:localhost/replica:0/task:0/device:GPU:0 with 9615 MB memory) -> physical GPU (device: 0, name: TITAN X (Pascal), pci bus id: 0000:02:00.0, compute capability: 6.1)
+num samples: 3412
+Found 2742 unique input tokens.
+Found 2801 unique output tokens.
+encoder_data.shape: (3412, 32)
+encoder_data[0]: [  0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0
+   0   0   0   0   0   0   0   0   0   0   0   0   0 398]
+decoder_data[0]: [   2 1631    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0    0    0
+    0    0    0    0    0    0    0    0    0    0    0    0]
+decoder_data.shape: (3412, 40)
+D:\cygwin64\home\trule\Notebook\LML\RNN-Seq2Seq\attention.py:141: UserWarning: Update your `Model` call to the Keras 2 API: `Model(inputs=[<tf.Tenso..., outputs=Tensor("St...)`
+  model = Model(input=[encoder_input,decoder_input,initial_s_input,initial_c_input ], output=probs)
+D:\cygwin64\home\trule\Notebook\LML\RNN-Seq2Seq\attention.py:144: UserWarning: Update your `Model` call to the Keras 2 API: `Model(inputs=Tensor("En..., outputs=Tensor("En...)`
+  encoder_model = Model(input = encoder_input, output = encoder_outputs) # Run once per generation
+D:\cygwin64\home\trule\Notebook\LML\RNN-Seq2Seq\attention.py:151: UserWarning: Update your `Model` call to the Keras 2 API: `Model(inputs=[<tf.Tenso..., outputs=[<tf.Tenso...)`
+  decoder_model = Model(input=[encoder_outputs_as_input, decoder_single_input, initial_s_input, initial_c_input], output=[decoder_single_output, decoder_single_h, decoder_single_c])
+__________________________________________________________________________________________________
+Layer (type)                    Output Shape         Param #     Connected to
+==================================================================================================
+EncoderInput (InputLayer)       (None, 32)           0
+__________________________________________________________________________________________________
+EncoderEmbedding (Embedding)    (None, 32, 100)      274300      EncoderInput[0][0]
+__________________________________________________________________________________________________
+DecoderHiddenState (InputLayer) (None, 256)          0
+__________________________________________________________________________________________________
+EncoderBiRnn (Bidirectional)    (None, 32, 512)      733184      EncoderEmbedding[0][0]
+__________________________________________________________________________________________________
+AttentionRepeat (RepeatVector)  (None, 32, 256)      0           DecoderHiddenState[0][0]
+                                                                 cu_dnnlstm_2[0][1]
+                                                                 cu_dnnlstm_2[1][1]
+                                                                 cu_dnnlstm_2[2][1]
+                                                                 cu_dnnlstm_2[3][1]
+                                                                 cu_dnnlstm_2[4][1]
+                                                                 cu_dnnlstm_2[5][1]
+                                                                 cu_dnnlstm_2[6][1]
+                                                                 cu_dnnlstm_2[7][1]
+                                                                 cu_dnnlstm_2[8][1]
+                                                                 cu_dnnlstm_2[9][1]
+                                                                 cu_dnnlstm_2[10][1]
+                                                                 cu_dnnlstm_2[11][1]
+                                                                 cu_dnnlstm_2[12][1]
+                                                                 cu_dnnlstm_2[13][1]
+                                                                 cu_dnnlstm_2[14][1]
+                                                                 cu_dnnlstm_2[15][1]
+                                                                 cu_dnnlstm_2[16][1]
+                                                                 cu_dnnlstm_2[17][1]
+                                                                 cu_dnnlstm_2[18][1]
+                                                                 cu_dnnlstm_2[19][1]
+                                                                 cu_dnnlstm_2[20][1]
+                                                                 cu_dnnlstm_2[21][1]
+                                                                 cu_dnnlstm_2[22][1]
+                                                                 cu_dnnlstm_2[23][1]
+                                                                 cu_dnnlstm_2[24][1]
+                                                                 cu_dnnlstm_2[25][1]
+                                                                 cu_dnnlstm_2[26][1]
+                                                                 cu_dnnlstm_2[27][1]
+                                                                 cu_dnnlstm_2[28][1]
+                                                                 cu_dnnlstm_2[29][1]
+                                                                 cu_dnnlstm_2[30][1]
+                                                                 cu_dnnlstm_2[31][1]
+                                                                 cu_dnnlstm_2[32][1]
+                                                                 cu_dnnlstm_2[33][1]
+                                                                 cu_dnnlstm_2[34][1]
+                                                                 cu_dnnlstm_2[35][1]
+                                                                 cu_dnnlstm_2[36][1]
+                                                                 cu_dnnlstm_2[37][1]
+                                                                 cu_dnnlstm_2[38][1]
+__________________________________________________________________________________________________
+AttentionConcat (Concatenate)   (None, 32, 768)      0           EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[0][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[1][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[2][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[3][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[4][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[5][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[6][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[7][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[8][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[9][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[10][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[11][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[12][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[13][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[14][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[15][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[16][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[17][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[18][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[19][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[20][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[21][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[22][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[23][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[24][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[25][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[26][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[27][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[28][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[29][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[30][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[31][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[32][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[33][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[34][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[35][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[36][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[37][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[38][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionRepeat[39][0]
+__________________________________________________________________________________________________
+AttentionDense_1 (Dense)        (None, 32, 10)       7690        AttentionConcat[0][0]
+                                                                 AttentionConcat[1][0]
+                                                                 AttentionConcat[2][0]
+                                                                 AttentionConcat[3][0]
+                                                                 AttentionConcat[4][0]
+                                                                 AttentionConcat[5][0]
+                                                                 AttentionConcat[6][0]
+                                                                 AttentionConcat[7][0]
+                                                                 AttentionConcat[8][0]
+                                                                 AttentionConcat[9][0]
+                                                                 AttentionConcat[10][0]
+                                                                 AttentionConcat[11][0]
+                                                                 AttentionConcat[12][0]
+                                                                 AttentionConcat[13][0]
+                                                                 AttentionConcat[14][0]
+                                                                 AttentionConcat[15][0]
+                                                                 AttentionConcat[16][0]
+                                                                 AttentionConcat[17][0]
+                                                                 AttentionConcat[18][0]
+                                                                 AttentionConcat[19][0]
+                                                                 AttentionConcat[20][0]
+                                                                 AttentionConcat[21][0]
+                                                                 AttentionConcat[22][0]
+                                                                 AttentionConcat[23][0]
+                                                                 AttentionConcat[24][0]
+                                                                 AttentionConcat[25][0]
+                                                                 AttentionConcat[26][0]
+                                                                 AttentionConcat[27][0]
+                                                                 AttentionConcat[28][0]
+                                                                 AttentionConcat[29][0]
+                                                                 AttentionConcat[30][0]
+                                                                 AttentionConcat[31][0]
+                                                                 AttentionConcat[32][0]
+                                                                 AttentionConcat[33][0]
+                                                                 AttentionConcat[34][0]
+                                                                 AttentionConcat[35][0]
+                                                                 AttentionConcat[36][0]
+                                                                 AttentionConcat[37][0]
+                                                                 AttentionConcat[38][0]
+                                                                 AttentionConcat[39][0]
+__________________________________________________________________________________________________
+AttentionDense_2 (Dense)        (None, 32, 1)        11          AttentionDense_1[0][0]
+                                                                 AttentionDense_1[1][0]
+                                                                 AttentionDense_1[2][0]
+                                                                 AttentionDense_1[3][0]
+                                                                 AttentionDense_1[4][0]
+                                                                 AttentionDense_1[5][0]
+                                                                 AttentionDense_1[6][0]
+                                                                 AttentionDense_1[7][0]
+                                                                 AttentionDense_1[8][0]
+                                                                 AttentionDense_1[9][0]
+                                                                 AttentionDense_1[10][0]
+                                                                 AttentionDense_1[11][0]
+                                                                 AttentionDense_1[12][0]
+                                                                 AttentionDense_1[13][0]
+                                                                 AttentionDense_1[14][0]
+                                                                 AttentionDense_1[15][0]
+                                                                 AttentionDense_1[16][0]
+                                                                 AttentionDense_1[17][0]
+                                                                 AttentionDense_1[18][0]
+                                                                 AttentionDense_1[19][0]
+                                                                 AttentionDense_1[20][0]
+                                                                 AttentionDense_1[21][0]
+                                                                 AttentionDense_1[22][0]
+                                                                 AttentionDense_1[23][0]
+                                                                 AttentionDense_1[24][0]
+                                                                 AttentionDense_1[25][0]
+                                                                 AttentionDense_1[26][0]
+                                                                 AttentionDense_1[27][0]
+                                                                 AttentionDense_1[28][0]
+                                                                 AttentionDense_1[29][0]
+                                                                 AttentionDense_1[30][0]
+                                                                 AttentionDense_1[31][0]
+                                                                 AttentionDense_1[32][0]
+                                                                 AttentionDense_1[33][0]
+                                                                 AttentionDense_1[34][0]
+                                                                 AttentionDense_1[35][0]
+                                                                 AttentionDense_1[36][0]
+                                                                 AttentionDense_1[37][0]
+                                                                 AttentionDense_1[38][0]
+                                                                 AttentionDense_1[39][0]
+__________________________________________________________________________________________________
+DecoderInput (InputLayer)       (None, 40)           0
+__________________________________________________________________________________________________
+AttentionSoftMaxOverTime (Lambd (None, 32, 1)        0           AttentionDense_2[0][0]
+                                                                 AttentionDense_2[1][0]
+                                                                 AttentionDense_2[2][0]
+                                                                 AttentionDense_2[3][0]
+                                                                 AttentionDense_2[4][0]
+                                                                 AttentionDense_2[5][0]
+                                                                 AttentionDense_2[6][0]
+                                                                 AttentionDense_2[7][0]
+                                                                 AttentionDense_2[8][0]
+                                                                 AttentionDense_2[9][0]
+                                                                 AttentionDense_2[10][0]
+                                                                 AttentionDense_2[11][0]
+                                                                 AttentionDense_2[12][0]
+                                                                 AttentionDense_2[13][0]
+                                                                 AttentionDense_2[14][0]
+                                                                 AttentionDense_2[15][0]
+                                                                 AttentionDense_2[16][0]
+                                                                 AttentionDense_2[17][0]
+                                                                 AttentionDense_2[18][0]
+                                                                 AttentionDense_2[19][0]
+                                                                 AttentionDense_2[20][0]
+                                                                 AttentionDense_2[21][0]
+                                                                 AttentionDense_2[22][0]
+                                                                 AttentionDense_2[23][0]
+                                                                 AttentionDense_2[24][0]
+                                                                 AttentionDense_2[25][0]
+                                                                 AttentionDense_2[26][0]
+                                                                 AttentionDense_2[27][0]
+                                                                 AttentionDense_2[28][0]
+                                                                 AttentionDense_2[29][0]
+                                                                 AttentionDense_2[30][0]
+                                                                 AttentionDense_2[31][0]
+                                                                 AttentionDense_2[32][0]
+                                                                 AttentionDense_2[33][0]
+                                                                 AttentionDense_2[34][0]
+                                                                 AttentionDense_2[35][0]
+                                                                 AttentionDense_2[36][0]
+                                                                 AttentionDense_2[37][0]
+                                                                 AttentionDense_2[38][0]
+                                                                 AttentionDense_2[39][0]
+__________________________________________________________________________________________________
+DecoderEmbedding (Embedding)    multiple             280200      DecoderInput[0][0]
+__________________________________________________________________________________________________
+AttentionDot (Dot)              (None, 1, 512)       0           AttentionSoftMaxOverTime[0][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[1][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[2][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[3][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[4][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[5][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[6][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[7][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[8][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[9][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[10][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[11][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[12][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[13][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[14][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[15][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[16][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[17][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[18][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[19][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[20][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[21][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[22][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[23][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[24][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[25][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[26][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[27][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[28][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[29][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[30][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[31][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[32][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[33][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[34][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[35][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[36][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[37][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[38][0]
+                                                                 EncoderBiRnn[0][0]
+                                                                 AttentionSoftMaxOverTime[39][0]
+                                                                 EncoderBiRnn[0][0]
+__________________________________________________________________________________________________
+Selector_0 (Lambda)             (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+concatenate_1 (Concatenate)     (None, 1, 612)       0           AttentionDot[0][0]
+                                                                 Selector_0[0][0]
+                                                                 AttentionDot[1][0]
+                                                                 Selector_1[0][0]
+                                                                 AttentionDot[2][0]
+                                                                 Selector_2[0][0]
+                                                                 AttentionDot[3][0]
+                                                                 Selector_3[0][0]
+                                                                 AttentionDot[4][0]
+                                                                 Selector_4[0][0]
+                                                                 AttentionDot[5][0]
+                                                                 Selector_5[0][0]
+                                                                 AttentionDot[6][0]
+                                                                 Selector_6[0][0]
+                                                                 AttentionDot[7][0]
+                                                                 Selector_7[0][0]
+                                                                 AttentionDot[8][0]
+                                                                 Selector_8[0][0]
+                                                                 AttentionDot[9][0]
+                                                                 Selector_9[0][0]
+                                                                 AttentionDot[10][0]
+                                                                 Selector_10[0][0]
+                                                                 AttentionDot[11][0]
+                                                                 Selector_11[0][0]
+                                                                 AttentionDot[12][0]
+                                                                 Selector_12[0][0]
+                                                                 AttentionDot[13][0]
+                                                                 Selector_13[0][0]
+                                                                 AttentionDot[14][0]
+                                                                 Selector_14[0][0]
+                                                                 AttentionDot[15][0]
+                                                                 Selector_15[0][0]
+                                                                 AttentionDot[16][0]
+                                                                 Selector_16[0][0]
+                                                                 AttentionDot[17][0]
+                                                                 Selector_17[0][0]
+                                                                 AttentionDot[18][0]
+                                                                 Selector_18[0][0]
+                                                                 AttentionDot[19][0]
+                                                                 Selector_19[0][0]
+                                                                 AttentionDot[20][0]
+                                                                 Selector_20[0][0]
+                                                                 AttentionDot[21][0]
+                                                                 Selector_21[0][0]
+                                                                 AttentionDot[22][0]
+                                                                 Selector_22[0][0]
+                                                                 AttentionDot[23][0]
+                                                                 Selector_23[0][0]
+                                                                 AttentionDot[24][0]
+                                                                 Selector_24[0][0]
+                                                                 AttentionDot[25][0]
+                                                                 Selector_25[0][0]
+                                                                 AttentionDot[26][0]
+                                                                 Selector_26[0][0]
+                                                                 AttentionDot[27][0]
+                                                                 Selector_27[0][0]
+                                                                 AttentionDot[28][0]
+                                                                 Selector_28[0][0]
+                                                                 AttentionDot[29][0]
+                                                                 Selector_29[0][0]
+                                                                 AttentionDot[30][0]
+                                                                 Selector_30[0][0]
+                                                                 AttentionDot[31][0]
+                                                                 Selector_31[0][0]
+                                                                 AttentionDot[32][0]
+                                                                 Selector_32[0][0]
+                                                                 AttentionDot[33][0]
+                                                                 Selector_33[0][0]
+                                                                 AttentionDot[34][0]
+                                                                 Selector_34[0][0]
+                                                                 AttentionDot[35][0]
+                                                                 Selector_35[0][0]
+                                                                 AttentionDot[36][0]
+                                                                 Selector_36[0][0]
+                                                                 AttentionDot[37][0]
+                                                                 Selector_37[0][0]
+                                                                 AttentionDot[38][0]
+                                                                 Selector_38[0][0]
+                                                                 AttentionDot[39][0]
+                                                                 Selector_39[0][0]
+__________________________________________________________________________________________________
+DecoderCellState (InputLayer)   (None, 256)          0
+__________________________________________________________________________________________________
+cu_dnnlstm_2 (CuDNNLSTM)        [(None, 256), (None, 890880      concatenate_1[0][0]
+                                                                 DecoderHiddenState[0][0]
+                                                                 DecoderCellState[0][0]
+                                                                 concatenate_1[1][0]
+                                                                 cu_dnnlstm_2[0][1]
+                                                                 cu_dnnlstm_2[0][2]
+                                                                 concatenate_1[2][0]
+                                                                 cu_dnnlstm_2[1][1]
+                                                                 cu_dnnlstm_2[1][2]
+                                                                 concatenate_1[3][0]
+                                                                 cu_dnnlstm_2[2][1]
+                                                                 cu_dnnlstm_2[2][2]
+                                                                 concatenate_1[4][0]
+                                                                 cu_dnnlstm_2[3][1]
+                                                                 cu_dnnlstm_2[3][2]
+                                                                 concatenate_1[5][0]
+                                                                 cu_dnnlstm_2[4][1]
+                                                                 cu_dnnlstm_2[4][2]
+                                                                 concatenate_1[6][0]
+                                                                 cu_dnnlstm_2[5][1]
+                                                                 cu_dnnlstm_2[5][2]
+                                                                 concatenate_1[7][0]
+                                                                 cu_dnnlstm_2[6][1]
+                                                                 cu_dnnlstm_2[6][2]
+                                                                 concatenate_1[8][0]
+                                                                 cu_dnnlstm_2[7][1]
+                                                                 cu_dnnlstm_2[7][2]
+                                                                 concatenate_1[9][0]
+                                                                 cu_dnnlstm_2[8][1]
+                                                                 cu_dnnlstm_2[8][2]
+                                                                 concatenate_1[10][0]
+                                                                 cu_dnnlstm_2[9][1]
+                                                                 cu_dnnlstm_2[9][2]
+                                                                 concatenate_1[11][0]
+                                                                 cu_dnnlstm_2[10][1]
+                                                                 cu_dnnlstm_2[10][2]
+                                                                 concatenate_1[12][0]
+                                                                 cu_dnnlstm_2[11][1]
+                                                                 cu_dnnlstm_2[11][2]
+                                                                 concatenate_1[13][0]
+                                                                 cu_dnnlstm_2[12][1]
+                                                                 cu_dnnlstm_2[12][2]
+                                                                 concatenate_1[14][0]
+                                                                 cu_dnnlstm_2[13][1]
+                                                                 cu_dnnlstm_2[13][2]
+                                                                 concatenate_1[15][0]
+                                                                 cu_dnnlstm_2[14][1]
+                                                                 cu_dnnlstm_2[14][2]
+                                                                 concatenate_1[16][0]
+                                                                 cu_dnnlstm_2[15][1]
+                                                                 cu_dnnlstm_2[15][2]
+                                                                 concatenate_1[17][0]
+                                                                 cu_dnnlstm_2[16][1]
+                                                                 cu_dnnlstm_2[16][2]
+                                                                 concatenate_1[18][0]
+                                                                 cu_dnnlstm_2[17][1]
+                                                                 cu_dnnlstm_2[17][2]
+                                                                 concatenate_1[19][0]
+                                                                 cu_dnnlstm_2[18][1]
+                                                                 cu_dnnlstm_2[18][2]
+                                                                 concatenate_1[20][0]
+                                                                 cu_dnnlstm_2[19][1]
+                                                                 cu_dnnlstm_2[19][2]
+                                                                 concatenate_1[21][0]
+                                                                 cu_dnnlstm_2[20][1]
+                                                                 cu_dnnlstm_2[20][2]
+                                                                 concatenate_1[22][0]
+                                                                 cu_dnnlstm_2[21][1]
+                                                                 cu_dnnlstm_2[21][2]
+                                                                 concatenate_1[23][0]
+                                                                 cu_dnnlstm_2[22][1]
+                                                                 cu_dnnlstm_2[22][2]
+                                                                 concatenate_1[24][0]
+                                                                 cu_dnnlstm_2[23][1]
+                                                                 cu_dnnlstm_2[23][2]
+                                                                 concatenate_1[25][0]
+                                                                 cu_dnnlstm_2[24][1]
+                                                                 cu_dnnlstm_2[24][2]
+                                                                 concatenate_1[26][0]
+                                                                 cu_dnnlstm_2[25][1]
+                                                                 cu_dnnlstm_2[25][2]
+                                                                 concatenate_1[27][0]
+                                                                 cu_dnnlstm_2[26][1]
+                                                                 cu_dnnlstm_2[26][2]
+                                                                 concatenate_1[28][0]
+                                                                 cu_dnnlstm_2[27][1]
+                                                                 cu_dnnlstm_2[27][2]
+                                                                 concatenate_1[29][0]
+                                                                 cu_dnnlstm_2[28][1]
+                                                                 cu_dnnlstm_2[28][2]
+                                                                 concatenate_1[30][0]
+                                                                 cu_dnnlstm_2[29][1]
+                                                                 cu_dnnlstm_2[29][2]
+                                                                 concatenate_1[31][0]
+                                                                 cu_dnnlstm_2[30][1]
+                                                                 cu_dnnlstm_2[30][2]
+                                                                 concatenate_1[32][0]
+                                                                 cu_dnnlstm_2[31][1]
+                                                                 cu_dnnlstm_2[31][2]
+                                                                 concatenate_1[33][0]
+                                                                 cu_dnnlstm_2[32][1]
+                                                                 cu_dnnlstm_2[32][2]
+                                                                 concatenate_1[34][0]
+                                                                 cu_dnnlstm_2[33][1]
+                                                                 cu_dnnlstm_2[33][2]
+                                                                 concatenate_1[35][0]
+                                                                 cu_dnnlstm_2[34][1]
+                                                                 cu_dnnlstm_2[34][2]
+                                                                 concatenate_1[36][0]
+                                                                 cu_dnnlstm_2[35][1]
+                                                                 cu_dnnlstm_2[35][2]
+                                                                 concatenate_1[37][0]
+                                                                 cu_dnnlstm_2[36][1]
+                                                                 cu_dnnlstm_2[36][2]
+                                                                 concatenate_1[38][0]
+                                                                 cu_dnnlstm_2[37][1]
+                                                                 cu_dnnlstm_2[37][2]
+                                                                 concatenate_1[39][0]
+                                                                 cu_dnnlstm_2[38][1]
+                                                                 cu_dnnlstm_2[38][2]
+__________________________________________________________________________________________________
+Selector_1 (Lambda)             (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_2 (Lambda)             (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_3 (Lambda)             (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_4 (Lambda)             (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_5 (Lambda)             (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_6 (Lambda)             (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_7 (Lambda)             (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_8 (Lambda)             (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_9 (Lambda)             (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_10 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_11 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_12 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_13 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_14 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_15 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_16 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_17 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_18 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_19 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_20 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_21 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_22 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_23 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_24 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_25 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_26 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_27 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_28 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_29 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_30 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_31 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_32 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_33 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_34 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_35 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_36 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_37 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_38 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+Selector_39 (Lambda)            (None, 1, 100)       0           DecoderEmbedding[0][0]
+__________________________________________________________________________________________________
+dense_1 (Dense)                 (None, 2802)         720114      cu_dnnlstm_2[0][0]
+                                                                 cu_dnnlstm_2[1][0]
+                                                                 cu_dnnlstm_2[2][0]
+                                                                 cu_dnnlstm_2[3][0]
+                                                                 cu_dnnlstm_2[4][0]
+                                                                 cu_dnnlstm_2[5][0]
+                                                                 cu_dnnlstm_2[6][0]
+                                                                 cu_dnnlstm_2[7][0]
+                                                                 cu_dnnlstm_2[8][0]
+                                                                 cu_dnnlstm_2[9][0]
+                                                                 cu_dnnlstm_2[10][0]
+                                                                 cu_dnnlstm_2[11][0]
+                                                                 cu_dnnlstm_2[12][0]
+                                                                 cu_dnnlstm_2[13][0]
+                                                                 cu_dnnlstm_2[14][0]
+                                                                 cu_dnnlstm_2[15][0]
+                                                                 cu_dnnlstm_2[16][0]
+                                                                 cu_dnnlstm_2[17][0]
+                                                                 cu_dnnlstm_2[18][0]
+                                                                 cu_dnnlstm_2[19][0]
+                                                                 cu_dnnlstm_2[20][0]
+                                                                 cu_dnnlstm_2[21][0]
+                                                                 cu_dnnlstm_2[22][0]
+                                                                 cu_dnnlstm_2[23][0]
+                                                                 cu_dnnlstm_2[24][0]
+                                                                 cu_dnnlstm_2[25][0]
+                                                                 cu_dnnlstm_2[26][0]
+                                                                 cu_dnnlstm_2[27][0]
+                                                                 cu_dnnlstm_2[28][0]
+                                                                 cu_dnnlstm_2[29][0]
+                                                                 cu_dnnlstm_2[30][0]
+                                                                 cu_dnnlstm_2[31][0]
+                                                                 cu_dnnlstm_2[32][0]
+                                                                 cu_dnnlstm_2[33][0]
+                                                                 cu_dnnlstm_2[34][0]
+                                                                 cu_dnnlstm_2[35][0]
+                                                                 cu_dnnlstm_2[36][0]
+                                                                 cu_dnnlstm_2[37][0]
+                                                                 cu_dnnlstm_2[38][0]
+                                                                 cu_dnnlstm_2[39][0]
+__________________________________________________________________________________________________
+Stack (Lambda)                  (None, 40, 2802)     0           dense_1[0][0]
+                                                                 dense_1[1][0]
+                                                                 dense_1[2][0]
+                                                                 dense_1[3][0]
+                                                                 dense_1[4][0]
+                                                                 dense_1[5][0]
+                                                                 dense_1[6][0]
+                                                                 dense_1[7][0]
+                                                                 dense_1[8][0]
+                                                                 dense_1[9][0]
+                                                                 dense_1[10][0]
+                                                                 dense_1[11][0]
+                                                                 dense_1[12][0]
+                                                                 dense_1[13][0]
+                                                                 dense_1[14][0]
+                                                                 dense_1[15][0]
+                                                                 dense_1[16][0]
+                                                                 dense_1[17][0]
+                                                                 dense_1[18][0]
+                                                                 dense_1[19][0]
+                                                                 dense_1[20][0]
+                                                                 dense_1[21][0]
+                                                                 dense_1[22][0]
+                                                                 dense_1[23][0]
+                                                                 dense_1[24][0]
+                                                                 dense_1[25][0]
+                                                                 dense_1[26][0]
+                                                                 dense_1[27][0]
+                                                                 dense_1[28][0]
+                                                                 dense_1[29][0]
+                                                                 dense_1[30][0]
+                                                                 dense_1[31][0]
+                                                                 dense_1[32][0]
+                                                                 dense_1[33][0]
+                                                                 dense_1[34][0]
+                                                                 dense_1[35][0]
+                                                                 dense_1[36][0]
+                                                                 dense_1[37][0]
+                                                                 dense_1[38][0]
+                                                                 dense_1[39][0]
+==================================================================================================
+Total params: 2,906,379
+Trainable params: 2,906,379
+Non-trainable params: 0
+__________________________________________________________________________________________________
+(3412, 32)
+Train on 2729 samples, validate on 683 samples
+Epoch 1/100
+2729/2729 [==============================] - 24s 9ms/step - loss: 1.9312 - acc: 0.7810 - val_loss: 2.5253 - val_acc: 0.6786
+Epoch 2/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 1.2908 - acc: 0.8062 - val_loss: 2.3645 - val_acc: 0.6798
+Epoch 3/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 1.1715 - acc: 0.8191 - val_loss: 2.1857 - val_acc: 0.6940
+Epoch 4/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 1.1152 - acc: 0.8300 - val_loss: 2.0638 - val_acc: 0.7053
+Epoch 5/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 1.0723 - acc: 0.8315 - val_loss: 2.0270 - val_acc: 0.7079
+Epoch 6/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 1.0390 - acc: 0.8329 - val_loss: 2.0228 - val_acc: 0.7097
+Epoch 7/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 1.0101 - acc: 0.8347 - val_loss: 2.0373 - val_acc: 0.7113
+Epoch 8/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.9843 - acc: 0.8366 - val_loss: 2.0347 - val_acc: 0.7124
+Epoch 9/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.9609 - acc: 0.8381 - val_loss: 2.0130 - val_acc: 0.7131
+Epoch 10/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.9400 - acc: 0.8393 - val_loss: 1.9875 - val_acc: 0.7150
+Epoch 11/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.9213 - acc: 0.8398 - val_loss: 1.9848 - val_acc: 0.7153
+Epoch 12/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.9043 - acc: 0.8417 - val_loss: 1.9826 - val_acc: 0.7158
+Epoch 13/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.8866 - acc: 0.8430 - val_loss: 1.9792 - val_acc: 0.7173
+Epoch 14/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.8689 - acc: 0.8443 - val_loss: 1.9819 - val_acc: 0.7172
+Epoch 15/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.8519 - acc: 0.8460 - val_loss: 1.9797 - val_acc: 0.7172
+Epoch 16/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.8340 - acc: 0.8475 - val_loss: 1.9840 - val_acc: 0.7180
+Epoch 17/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.8148 - acc: 0.8489 - val_loss: 1.9983 - val_acc: 0.7173
+Epoch 18/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.7978 - acc: 0.8509 - val_loss: 1.9813 - val_acc: 0.7182
+Epoch 19/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.7809 - acc: 0.8526 - val_loss: 1.9907 - val_acc: 0.7186
+Epoch 20/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.7629 - acc: 0.8546 - val_loss: 1.9888 - val_acc: 0.7194
+Epoch 21/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.7458 - acc: 0.8571 - val_loss: 1.9913 - val_acc: 0.7197
+Epoch 22/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.7278 - acc: 0.8592 - val_loss: 2.0015 - val_acc: 0.7209
+Epoch 23/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.7104 - acc: 0.8616 - val_loss: 1.9971 - val_acc: 0.7197
+Epoch 24/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.6923 - acc: 0.8635 - val_loss: 1.9956 - val_acc: 0.7197
+Epoch 25/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.6758 - acc: 0.8664 - val_loss: 2.0106 - val_acc: 0.7212
+Epoch 26/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.6581 - acc: 0.8688 - val_loss: 2.0216 - val_acc: 0.7201
+Epoch 27/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.6410 - acc: 0.8716 - val_loss: 2.0273 - val_acc: 0.7206
+Epoch 28/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.6233 - acc: 0.8746 - val_loss: 2.0338 - val_acc: 0.7223
+Epoch 29/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.6068 - acc: 0.8769 - val_loss: 2.0453 - val_acc: 0.7221
+Epoch 30/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.5907 - acc: 0.8795 - val_loss: 2.0306 - val_acc: 0.7210
+Epoch 31/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.5736 - acc: 0.8831 - val_loss: 2.0443 - val_acc: 0.7215
+Epoch 32/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.5580 - acc: 0.8856 - val_loss: 2.0441 - val_acc: 0.7217
+Epoch 33/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.5414 - acc: 0.8888 - val_loss: 2.0731 - val_acc: 0.7219
+Epoch 34/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.5264 - acc: 0.8916 - val_loss: 2.0679 - val_acc: 0.7228
+Epoch 35/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.5111 - acc: 0.8948 - val_loss: 2.0710 - val_acc: 0.7222
+Epoch 36/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.4949 - acc: 0.8984 - val_loss: 2.0770 - val_acc: 0.7224
+Epoch 37/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.4803 - acc: 0.9013 - val_loss: 2.0756 - val_acc: 0.7229
+Epoch 38/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.4658 - acc: 0.9043 - val_loss: 2.0878 - val_acc: 0.7227
+Epoch 39/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.4508 - acc: 0.9078 - val_loss: 2.0874 - val_acc: 0.7225
+Epoch 40/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.4362 - acc: 0.9106 - val_loss: 2.1081 - val_acc: 0.7221
+Epoch 41/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.4219 - acc: 0.9139 - val_loss: 2.1082 - val_acc: 0.7228
+Epoch 42/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.4071 - acc: 0.9172 - val_loss: 2.1155 - val_acc: 0.7234
+Epoch 43/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.3937 - acc: 0.9198 - val_loss: 2.1315 - val_acc: 0.7228
+Epoch 44/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.3793 - acc: 0.9227 - val_loss: 2.1248 - val_acc: 0.7225
+Epoch 45/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.3669 - acc: 0.9256 - val_loss: 2.1314 - val_acc: 0.7232
+Epoch 46/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.3538 - acc: 0.9288 - val_loss: 2.1352 - val_acc: 0.7228
+Epoch 47/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.3404 - acc: 0.9315 - val_loss: 2.1472 - val_acc: 0.7220
+Epoch 48/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.3280 - acc: 0.9343 - val_loss: 2.1523 - val_acc: 0.7228
+Epoch 49/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.3156 - acc: 0.9370 - val_loss: 2.1629 - val_acc: 0.7219
+Epoch 50/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.3036 - acc: 0.9398 - val_loss: 2.1671 - val_acc: 0.7236
+Epoch 51/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.2914 - acc: 0.9419 - val_loss: 2.1821 - val_acc: 0.7229
+Epoch 52/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.2798 - acc: 0.9448 - val_loss: 2.1944 - val_acc: 0.7224
+Epoch 53/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.2693 - acc: 0.9470 - val_loss: 2.1964 - val_acc: 0.7234
+Epoch 54/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.2573 - acc: 0.9491 - val_loss: 2.2066 - val_acc: 0.7230
+Epoch 55/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.2469 - acc: 0.9515 - val_loss: 2.2307 - val_acc: 0.7226
+Epoch 56/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.2382 - acc: 0.9534 - val_loss: 2.2219 - val_acc: 0.7234
+Epoch 57/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.2270 - acc: 0.9555 - val_loss: 2.2332 - val_acc: 0.7221
+Epoch 58/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.2166 - acc: 0.9577 - val_loss: 2.2503 - val_acc: 0.7225
+Epoch 59/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.2082 - acc: 0.9598 - val_loss: 2.2550 - val_acc: 0.7224
+Epoch 60/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.1981 - acc: 0.9621 - val_loss: 2.2673 - val_acc: 0.7234
+Epoch 61/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.1896 - acc: 0.9638 - val_loss: 2.2668 - val_acc: 0.7224
+Epoch 62/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.1808 - acc: 0.9658 - val_loss: 2.2870 - val_acc: 0.7225
+Epoch 63/100
+2729/2729 [==============================] - 10s 4ms/step - loss: 0.1723 - acc: 0.9675 - val_loss: 2.2908 - val_acc: 0.7224
+Epoch 64/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.1648 - acc: 0.9686 - val_loss: 2.3169 - val_acc: 0.7213
+Epoch 65/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.1572 - acc: 0.9707 - val_loss: 2.3073 - val_acc: 0.7228
+Epoch 66/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.1488 - acc: 0.9728 - val_loss: 2.3227 - val_acc: 0.7217
+Epoch 67/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.1417 - acc: 0.9735 - val_loss: 2.3314 - val_acc: 0.7225
+Epoch 68/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.1353 - acc: 0.9751 - val_loss: 2.3373 - val_acc: 0.7226
+Epoch 69/100
+2729/2729 [==============================] - 10s 4ms/step - loss: 0.1282 - acc: 0.9765 - val_loss: 2.3508 - val_acc: 0.7216
+Epoch 70/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.1214 - acc: 0.9779 - val_loss: 2.3589 - val_acc: 0.7225
+Epoch 71/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.1158 - acc: 0.9790 - val_loss: 2.3760 - val_acc: 0.7222
+Epoch 72/100
+2729/2729 [==============================] - 10s 3ms/step - loss: 0.1094 - acc: 0.9797 - val_loss: 2.3863 - val_acc: 0.7224
+Epoch 73/100
+2729/2729 [==============================] - 10s 4ms/step - loss: 0.1033 - acc: 0.9816 - val_loss: 2.3998 - val_acc: 0.7211
+Epoch 74/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0988 - acc: 0.9823 - val_loss: 2.4166 - val_acc: 0.7215
+Epoch 75/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0929 - acc: 0.9834 - val_loss: 2.4086 - val_acc: 0.7215
+Epoch 76/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0883 - acc: 0.9841 - val_loss: 2.4231 - val_acc: 0.7217
+Epoch 77/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0834 - acc: 0.9850 - val_loss: 2.4342 - val_acc: 0.7218
+Epoch 78/100
+2729/2729 [==============================] - 10s 4ms/step - loss: 0.0792 - acc: 0.9860 - val_loss: 2.4395 - val_acc: 0.7217
+Epoch 79/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0749 - acc: 0.9865 - val_loss: 2.4484 - val_acc: 0.7207
+Epoch 80/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0703 - acc: 0.9876 - val_loss: 2.4645 - val_acc: 0.7220
+Epoch 81/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0670 - acc: 0.9880 - val_loss: 2.4808 - val_acc: 0.7213
+Epoch 82/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0637 - acc: 0.9885 - val_loss: 2.4933 - val_acc: 0.7224
+Epoch 83/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0601 - acc: 0.9891 - val_loss: 2.4952 - val_acc: 0.7214
+Epoch 84/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0571 - acc: 0.9896 - val_loss: 2.5025 - val_acc: 0.7214
+Epoch 85/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0535 - acc: 0.9903 - val_loss: 2.5226 - val_acc: 0.7210
+Epoch 86/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0510 - acc: 0.9906 - val_loss: 2.5267 - val_acc: 0.7217
+Epoch 87/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0481 - acc: 0.9910 - val_loss: 2.5301 - val_acc: 0.7224
+Epoch 88/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0460 - acc: 0.9913 - val_loss: 2.5487 - val_acc: 0.7215
+Epoch 89/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0432 - acc: 0.9916 - val_loss: 2.5528 - val_acc: 0.7220
+Epoch 90/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0407 - acc: 0.9922 - val_loss: 2.5649 - val_acc: 0.7219
+Epoch 91/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0393 - acc: 0.9923 - val_loss: 2.5817 - val_acc: 0.7216
+Epoch 92/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0375 - acc: 0.9925 - val_loss: 2.5852 - val_acc: 0.7224
+Epoch 93/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0350 - acc: 0.9931 - val_loss: 2.5809 - val_acc: 0.7210
+Epoch 94/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0336 - acc: 0.9931 - val_loss: 2.6035 - val_acc: 0.7219
+Epoch 95/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0320 - acc: 0.9933 - val_loss: 2.6012 - val_acc: 0.7214
+Epoch 96/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0305 - acc: 0.9936 - val_loss: 2.6049 - val_acc: 0.7210
+Epoch 97/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0295 - acc: 0.9936 - val_loss: 2.6150 - val_acc: 0.7206
+Epoch 98/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0280 - acc: 0.9937 - val_loss: 2.6315 - val_acc: 0.7207
+Epoch 99/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0267 - acc: 0.9940 - val_loss: 2.6378 - val_acc: 0.7226
+Epoch 100/100
+2729/2729 [==============================] - 9s 3ms/step - loss: 0.0256 - acc: 0.9942 - val_loss: 2.6493 - val_acc: 0.7201
+Run! chạy! <eos>
+Help! giúp tôi với! <eos>
+Hello! chào bạn. <eos>
+Hurry! nhanh lên nào! <eos>
+Help me! cứu tôi với! <eos>
+You run. bạn chạy. <eos>
+Cheer up. đừng có rầu rĩ quá như thế. <eos>
+He tries. anh thử. <eos>
+He tries. anh thử. <eos>
+Hurry up. thôi nào, nhanh lên đi. <eos>
+I'm bald. tôi bị hói <eos>
+I'm busy. tôi đang bận. <eos>
+Too late. muộn quá. <eos>
+I will go. tôi sẽ đi. <eos>
+It's cold. lạnh. <eos>
+It's ours. đó là của chúng tôi. <eos>
+It's ours. đó là của chúng tôi. <eos>
+She cried. cô ấy đã khóc <eos>
+She cried. cô ấy đã khóc <eos>
+What's up? có chuyện gì? <eos>
