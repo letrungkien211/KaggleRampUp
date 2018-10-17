@@ -1,3 +1,6 @@
+# 
+# Reference: https://arxiv.org/pdf/1409.0473.pdf
+
 from keras import Input, Model
 from keras.layers import LSTM, Dot, Concatenate, Layer, Embedding, Bidirectional, Dense, Activation, RepeatVector, Lambda
 from keras.activations import softmax
@@ -19,22 +22,15 @@ class Attention:
         self.dot = Dot(axes = 1, name='AttentionDot')
         self.softmax_over_time = Lambda(lambda x: softmax(x, axis=1), name = 'AttentionSoftMaxOverTime')
 
-    def __call__(self, st_1, h):
+    def forward(self, st_1, h):
         st_1 = self.repeatvector(st_1) # (L1, M2)
         x = self.concatenate([h, st_1]) # (L1, 2*M1+M2)
 
         x = self.dense_1(x) # (L1, dense_size)
         x = self.dense_2(x) # (L1, 1)
-        x = self.softmax_over_time(x) # (L1, 1)
+        x = self.softmax_over_time(x) # (L1, 1). 
 
         return self.dot([x, h]) # (1, 2*M1)
-
-# Stack and transpose
-def stack_and_transpose(x):
-  # x is a list of length T, each element is a batch_size x output_vocab_size tensor
-  x = K.stack(x) # is now T x batch_size x output_vocab_size tensor
-  x = K.permute_dimensions(x, pattern=(1, 0, 2)) # is now batch_size x T x output_vocab_size
-  return x
 
 # Decoder
 class Decoder:
@@ -47,11 +43,11 @@ class Decoder:
         self.concatenate = Concatenate(axis=-1)
         self.lstm = LSTM(hidden_dim, return_state=True)
 
-    def __call__(self, encoder_outputs, decoder_inputs, s, c, target_len, inference=False):
+    def forward(self, encoder_outputs, decoder_inputs, s, c, target_len, inference=False):
         probs = []
 
         for t in range(target_len):
-            context = self.attention(s, encoder_outputs) # (1, 2*M1)
+            context = self.attention.forward(s, encoder_outputs) # (1, 2*M1)
             selector = Lambda(lambda x: x[:, t:t+1], name="Selector_" + str(t))
             xt = selector(decoder_inputs) # (1, E2)
             xt = self.concatenate([context, xt]) # (1, E2+2*M1)
@@ -59,29 +55,38 @@ class Decoder:
             o, s, c = self.lstm(xt, initial_state = [s,c]) # (M2)
             prob = self.dense(o) # (W2)
             probs.append(prob)
-            
+
         if(inference):
             return probs[0], s, c 
         else:
             return probs
-    
 
-class AttentionModel():
-    def __init__(self, train_model, encoder_model, decoder_model):
-        self.train_model = train_model
+# Stack and transpose
+def stack_and_transpose(x):
+  # x is a list of length T, each element is a batch_size x output_vocab_size tensor
+  x = K.stack(x) # is now T x batch_size x output_vocab_size tensor
+  x = K.permute_dimensions(x, pattern=(1, 0, 2)) # is now batch_size x T x output_vocab_size
+  return x
+
+StackLayer = Lambda(stack_and_transpose, name='Stack')
+
+# A seprate inference model is required because decoder input's length is 1 instead of MAX_LEN_TARGET in training
+class InferenceModel():
+    def __init__(self, encoder_model, decoder_model):
+        ''' A separate inference model is required because decoder input's length is 1 instead of MAX_LEN_TARGET in training
+        '''
         self.encoder_model = encoder_model
         self.decoder_model = decoder_model
     
-    def predict(self, input_sequence, sos_key, eos_key):
+    def predict(self, input_sequence, sos_key, eos_key, max_len = 100):
         hidden_dim_decoder = self.decoder_model.input_shape[2][1]
-        print(input_sequence.shape)
         encoder_outputs = self.encoder_model.predict(input_sequence)
         s = np.zeros((1, hidden_dim_decoder))
         c = np.zeros((1, hidden_dim_decoder))
         target_seq = np.array([sos_key]).reshape(1, 1)
-        MAX_LEN = 100
+        max_len = 100
         sequence = []
-        for _ in range(MAX_LEN):
+        for _ in range(max_len):
             o, s, c  = self.decoder_model.predict([encoder_outputs, target_seq, s, c])
             pred = np.argmax(o)
             sequence.append(pred)
@@ -90,6 +95,12 @@ class AttentionModel():
             target_seq[0,0] = pred
 
         return sequence
+    def save(self, prefix='./'):
+        pass
+
+    @staticmethod
+    def load(prefix='./'):
+        pass
 
 class ModelFactory:
     # Create train and inference model
@@ -121,27 +132,22 @@ class ModelFactory:
         decoder_embedding_output = decoder_embedding_layer(decoder_input)
         decoder = Decoder(max_len_input, max_words_target, hidden_dim_decoder)
 
-        decoder_outputs = decoder(encoder_outputs, decoder_embedding_output, initial_s_input, initial_c_input, max_len_target)
-        
+        decoder_outputs = decoder.forward(encoder_outputs, decoder_embedding_output, initial_s_input, initial_c_input, max_len_target)
+              
         # stack outputs
-        stacker = Lambda(stack_and_transpose, name='Stack')
-        probs = stacker(decoder_outputs)
+        probs = StackLayer(decoder_outputs)
         
         # Train model
-        train_model = Model(input=[encoder_input,decoder_input,initial_s_input,initial_c_input ], output=probs)
+        model = Model(input=[encoder_input,decoder_input,initial_s_input,initial_c_input ], output=probs)
 
         ## Create inference model
-        encoder_model = Model(input = encoder_input, output = encoder_outputs)
+        encoder_model = Model(input = encoder_input, output = encoder_outputs) # Run once per generation
 
-        encoder_outputs_as_input = Input(shape=(max_len_input, 2*hidden_dim_encoder))     
-        
+        encoder_outputs_as_input = Input(shape=(max_len_input, 2*hidden_dim_encoder))   
         decoder_single_input = Input(shape=(1,))
         decoder_single_embedding_output = decoder_embedding_layer(decoder_single_input)
 
-        decoder_single_output, decoder_single_h, decoder_single_c = decoder(encoder_outputs_as_input, decoder_single_embedding_output, initial_s_input, initial_c_input, 1, True)
+        decoder_single_output, decoder_single_h, decoder_single_c = decoder.forward(encoder_outputs_as_input, decoder_single_embedding_output, initial_s_input, initial_c_input, 1, True)
         decoder_model = Model(input=[encoder_outputs_as_input, decoder_single_input, initial_s_input, initial_c_input], output=[decoder_single_output, decoder_single_h, decoder_single_c])
 
-        return AttentionModel(train_model, encoder_model, decoder_model)
-
-
-
+        return model, InferenceModel(encoder_model, decoder_model)

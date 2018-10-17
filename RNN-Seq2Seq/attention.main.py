@@ -1,3 +1,4 @@
+# Most of the preprocessing code is from this course.
 # https://deeplearningcourses.com/c/deep-learning-advanced-nlp
 from __future__ import print_function, division
 from builtins import range, input
@@ -24,16 +25,6 @@ if len(K.tensorflow_backend._get_available_gpus()) > 0:
   from keras.layers import CuDNNGRU as GRU
 
 
-# make sure we do softmax over the time axis
-# expected shape is N x T x D
-# note: the latest version of Keras allows you to pass in axis arg
-def softmax_over_time(x):
-  assert(K.ndim(x) > 2)
-  e = K.exp(x - K.max(x, axis=1, keepdims=True))
-  s = K.sum(e, axis=1, keepdims=True)
-  return e / s
-
-
 old_open = open
 def open(*args, **kwargs):
     encoding = kwargs.pop('encoding', 'utf8')
@@ -48,9 +39,6 @@ NUM_SAMPLES = 3412
 MAX_SEQUENCE_LENGTH = 100
 MAX_NUM_WORDS = 20000
 EMBEDDING_DIM = 100
-
-
-
 
 # Where we will store the data
 input_texts = [] # sentence in original language
@@ -152,7 +140,7 @@ for i, d in enumerate(decoder_targets):
 
 num_words = min(MAX_NUM_WORDS, len(word2idx_inputs) + 1)
 
-attention_model = ModelFactory.create(
+model, inference_model = ModelFactory.create(
   max_len_input, 
   max_len_target, 
   EMBEDDING_DIM, 
@@ -163,7 +151,6 @@ attention_model = ModelFactory.create(
   num_words_output
 )
 
-model = attention_model.train_model
 model.summary()
 
 # from keras.utils import plot_model
@@ -182,6 +169,6 @@ r = model.fit(
 )
 
 for i in range(20):
-  output = attention_model.predict(np.array(encoder_inputs[i:i+1]), word2idx_outputs['<sos>'], word2idx_outputs['<eos>'])
+  output = inference_model.predict(np.array(encoder_inputs[i:i+1]), word2idx_outputs['<sos>'], word2idx_outputs['<eos>'])
   output_sentences = tokenizer_outputs.sequences_to_texts([list(output)])
   print(input_texts[i], output_sentences[0])
