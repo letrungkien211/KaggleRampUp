@@ -3,7 +3,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import unittest
 
-from transformer import ScaleDotProduct, MultiHeadAttention
+from transformer import scale_dot_product, MultiHeadAttention, mask
 
 import tensorflow as tf
 import numpy as np
@@ -15,20 +15,20 @@ d_model = 10
 dk = 5
 dv = 3
 Tx = 4
+Ty = 7
 B = 2
-h = 3
+h = 6
+maskStep = 2
 
 class TestTransformer(unittest.TestCase):
     def test_scale_product(self):
-        scaledot = ScaleDotProduct()
-
-        Q = tf.placeholder(tf.float32, shape=(None, Tx, dk))
+        Q = tf.placeholder(tf.float32, shape=(None, Ty, dk))
         K = tf.placeholder(tf.float32, shape=(None, Tx, dk))
         V = tf.placeholder(tf.float32, shape=(None, Tx, dv))
        
-        output = scaledot.forward(Q, K, V, dk, Tx, True, 2)
+        output = scale_dot_product(Q, K, V, Tx, dk)
         
-        q_val = np.random.rand(B, Tx, dk)
+        q_val = np.random.rand(B, Ty, dk)
         k_val = np.random.rand(B, Tx, dk)
         v_val = np.random.rand(B, Tx, dv)
 
@@ -36,13 +36,21 @@ class TestTransformer(unittest.TestCase):
         print(inspect.stack()[0].function, '---')
         print(out_val.shape)
         print(out_val)
-        assert all([x == out_val.shape[i] for i, x in enumerate([B, Tx, dv])])      
+        assert all([x == out_val.shape[i] for i, x in enumerate([B, Ty, dv])])
+
+    def test_mask(self):
+        x = tf.placeholder(tf.float32, shape=(None, dk, dk))
+        y = mask(x, dk, dk-1)
+        out_val = y.eval(feed_dict={x: np.random.rand(B, dk, dk)})
+        print(inspect.stack()[0].function, '---')
+        print(out_val.shape)
+        print(out_val)       
 
     def test_multi_head(self):
-        multiHead = MultiHeadAttention(d_model, dk, dv, Tx, True, Tx-1, h)
+        multiHead = MultiHeadAttention(d_model, dk, dv, h)
         input = tf.placeholder(tf.float32, shape=(None, Tx, d_model))
 
-        output = multiHead.forward(input,input,input)
+        output = multiHead.forward(input,input,input, Tx, maskStep)
 
         sess.run(tf.global_variables_initializer())
         input_val = np.random.rand(B, Tx, d_model)

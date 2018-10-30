@@ -6,45 +6,71 @@ from tensorflow.python.ops import array_ops
 from tensorflow.keras.layers import Dense
 
 # Scale dot product
-def scale_dot_product(Q, K, V, dk, maskStep = -1):
+def scale_dot_product(Q, K, V, dk, L, maskStep = -1):
     x = tf.matmul(Q, K, transpose_b = True)
     x = tf.scalar_mul(1/math.sqrt(dk), x)
     if(maskStep !=-1):
-        x = mask(x, maskStep)
+        x = mask(x, L, maskStep)
     x = tf.nn.softmax(x)
     return tf.matmul(x, V)
 
-def mask(input, maskStep):
-    intput_shape = array_ops.shape(input)
-    
-    m = np.zeros(intput_shape[2], intput_shape[2])
-    m[:maskStep, :maskStep] = 1
-    m = tf.convert_to_tensor(m)
-    return tf.matmul(input, m)   
+# mask
+def mask(input, dim,  i):
+    m = tf.ones([i, i])
+    m = tf.pad(m, [[0, dim-i], [0, dim-i]])
+    return tf.multiply(input, m)
 
-# Multi head attention
-class MultiHeadAttention():
-    def __init__(self, d_model, dk, dv, Tx, h):
-        self.output_dense = Dense(d_model)
+class H_Layer():
+    def __init__(self, dk, dv):
         self.v_dense = Dense(dv)
         self.q_dense = Dense(dk)
         self.k_dense = Dense(dk)
         self.dk = dk
-        self.dv = dv
-        self.Tx = Tx
-        self.h = h
-        self.d_model = d_model
-
-    def forward(self, V, K, Q):
+    def forward(self, V, K, Q, T, maskStep = -1):
         V = self.v_dense(V)
         Q = self.q_dense(Q)
         K = self.k_dense(K)
+        return scale_dot_product(Q, K, V, self.dk, T, maskStep)
 
-        output = []
-        for _ in range(self.h):
-            x = scale_dot_product(Q, K, V, self.dk)
-            output.append(x)
+# Multi head attention
+class MultiHeadAttention():
+    def __init__(self, d_model, dk, dv, h):
+        self.output_dense = Dense(d_model)
+        self.h_layers = [H_Layer(dk, dv) for i in range(h)]
+
+    def forward(self, V, K, Q, T, maskStep):
+        output = [layer.forward(V, K, Q, T, maskStep) for layer in self.h_layers]
         output = tf.concat(output, 2)     
         output = self.output_dense(output)
         return output
 
+
+class AddNorm():
+    def __init__(self):
+        pass
+    def forward(self, x, y):
+        ## TODO: Add layer normalization layer. tf.keras.layers doesn't have yet. May need to use the one in tf.contrib
+        return tf.add(x, y)
+
+class FFN():
+    def __init__(self, d_model, d_ff):
+        self.dense_1 = Dense(d_ff)
+        self.dense_2 = Dense(d_model)
+    def forward(self, x):
+        return self.dense_2(self.dense_1(x))
+
+# Encoder block
+class EncoderBlock():
+    def __init__(self, d_model, d_ff, dk, dv, h):
+        self.mha = MultiHeadAttention(d_model, dk, dv, h)
+        self.mha_addnorm = AddNorm()
+        self.ffn = FFN(d_model, d_ff)
+        self.ffn_addnorm = AddNorm()
+    def forward(self, input):
+        x = self.mha.forward(input, input, input, -1, -1)
+        x = self.mha_addnorm.forward(x, input)
+        
+        y = self.ffn.forward(x)
+        y = self.ffn_addnorm.forward(x, y)
+
+        return y
