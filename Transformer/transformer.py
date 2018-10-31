@@ -6,11 +6,11 @@ from tensorflow.python.ops import array_ops
 from tensorflow.keras.layers import Dense
 
 # Scale dot product
-def scale_dot_product(Q, K, V, dk, L, maskStep = -1):
+def scale_dot_product(Q, K, V, dk, T = -1, maskStep = -1):
     x = tf.matmul(Q, K, transpose_b = True)
     x = tf.scalar_mul(1/math.sqrt(dk), x)
-    if(maskStep !=-1):
-        x = mask(x, L, maskStep)
+    if(maskStep !=-1 and T!=-1):
+        x = mask(x, T, maskStep)
     x = tf.nn.softmax(x)
     return tf.matmul(x, V)
 
@@ -26,7 +26,7 @@ class H_Layer():
         self.q_dense = Dense(dk)
         self.k_dense = Dense(dk)
         self.dk = dk
-    def forward(self, V, K, Q, T, maskStep = -1):
+    def forward(self, V, K, Q, T = -1, maskStep = -1):
         V = self.v_dense(V)
         Q = self.q_dense(Q)
         K = self.k_dense(K)
@@ -38,12 +38,11 @@ class MultiHeadAttention():
         self.output_dense = Dense(d_model)
         self.h_layers = [H_Layer(dk, dv) for i in range(h)]
 
-    def forward(self, V, K, Q, T, maskStep):
+    def forward(self, V, K, Q, T=-1, maskStep=-1):
         output = [layer.forward(V, K, Q, T, maskStep) for layer in self.h_layers]
         output = tf.concat(output, 2)     
         output = self.output_dense(output)
         return output
-
 
 class AddNorm():
     def __init__(self):
@@ -54,7 +53,7 @@ class AddNorm():
 
 class FFN():
     def __init__(self, d_model, d_ff):
-        self.dense_1 = Dense(d_ff)
+        self.dense_1 = Dense(d_ff, activation='relu')
         self.dense_2 = Dense(d_model)
     def forward(self, x):
         return self.dense_2(self.dense_1(x))
@@ -67,7 +66,7 @@ class EncoderBlock():
         self.ffn = FFN(d_model, d_ff)
         self.ffn_addnorm = AddNorm()
     def forward(self, input):
-        x = self.mha.forward(input, input, input, -1, -1)
+        x = self.mha.forward(input, input, input)
         x = self.mha_addnorm.forward(x, input)
         
         y = self.ffn.forward(x)
