@@ -73,3 +73,13 @@ class EncoderBlock():
         y = self.ffn_addnorm.forward(x, y)
 
         return y
+
+class Encoder():
+    def __init__(self, Nx, encoder_block):
+        self.encoder_block = encoder_block
+        self.Nx = Nx
+    def forward(self, input):
+        output = input
+        for _ in range(self.Nx):
+            output = self.encoder_block.forward(output)
+        return output
