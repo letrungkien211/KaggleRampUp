@@ -22,9 +22,10 @@ def mask(input, dim,  i):
 
 class H_Layer():
     def __init__(self, dk, dv):
-        self.v_dense = Dense(dv)
-        self.q_dense = Dense(dk)
-        self.k_dense = Dense(dk)
+        with tf.variable_scope('H_Layer'):
+            self.v_dense = Dense(dv, name='Wv')
+            self.q_dense = Dense(dk, name='Wq')
+            self.k_dense = Dense(dk, name='Wk')
         self.dk = dk
     def forward(self, V, K, Q, T = -1, maskStep = -1):
         V = self.v_dense(V)

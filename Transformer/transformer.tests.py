@@ -3,7 +3,7 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 import unittest
 
-from transformer import scale_dot_product, MultiHeadAttention, mask
+from transformer import scale_dot_product, MultiHeadAttention, mask, EncoderBlock, Encoder
 
 import tensorflow as tf
 import numpy as np
@@ -11,14 +11,16 @@ import inspect
 
 sess = tf.InteractiveSession()
 
-d_model = 10
+d_model = 256
 dk = 5
 dv = 3
 Tx = 4
 Ty = 7
 B = 2
-h = 6
+h = 2
+d_ff = 64
 maskStep = 2
+Nx = 1
 
 class TestTransformer(unittest.TestCase):
     def test_scale_product(self):
@@ -39,9 +41,9 @@ class TestTransformer(unittest.TestCase):
         assert all([x == out_val.shape[i] for i, x in enumerate([B, Ty, dv])])
 
     def test_mask(self):
-        x = tf.placeholder(tf.float32, shape=(None, dk, dk))
-        y = mask(x, dk, dk-1)
-        out_val = y.eval(feed_dict={x: np.random.rand(B, dk, dk)})
+        x = tf.placeholder(tf.float32, shape=(None, Ty, Ty))
+        y = mask(x, Ty, Ty-2)
+        out_val = y.eval(feed_dict={x: np.random.rand(B, Ty, Ty)})
         print(inspect.stack()[0].function, '---')
         print(out_val.shape)
         print(out_val)       
@@ -60,6 +62,17 @@ class TestTransformer(unittest.TestCase):
         print(out_val.shape)
         print(out_val)  
         assert all([x == out_val.shape[i] for i, x in enumerate([B, Tx, d_model])])      
+
+    def test_encoder_model(self):
+        tf.reset_default_graph()
+        with tf.Session() as sess:
+            Input = tf.placeholder(tf.float32, shape=(None, Ty, dk), name='Input')
+            multi_head = MultiHeadAttention(d_model, dk, dv, h)
+            output = multi_head.forward(Input, Input, Input, Ty, maskStep)
+            sess.run(tf.global_variables_initializer())
+            writer = tf.summary.FileWriter("./logs/encoder_model")
+            writer.add_graph(sess.graph)
+
 
     # def test_dummy(self):
     #     wv = tf.get_variable('wv', (d_model, dv), dtype=tf.float32)
