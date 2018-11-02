@@ -77,6 +77,8 @@ class TestTransformer(unittest.TestCase):
     # def test_dummy(self):
     #     wv = tf.get_variable('wv', (d_model, dv), dtype=tf.float32)
     #     print('OL')
+    def test_draw_components(self):
+        tf.reset_default_graph()
 
 if __name__ == '__main__':
     unittest.main()

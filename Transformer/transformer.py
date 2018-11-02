@@ -63,15 +63,15 @@ class FFN():
 class EncoderBlock():
     def __init__(self, d_model, d_ff, dk, dv, h):
         self.mha = MultiHeadAttention(d_model, dk, dv, h)
-        self.mha_addnorm = AddNorm()
+        self.addnorm_1 = AddNorm()
         self.ffn = FFN(d_model, d_ff)
-        self.ffn_addnorm = AddNorm()
+        self.addnorm_2 = AddNorm()
     def forward(self, input):
         x = self.mha.forward(input, input, input)
-        x = self.mha_addnorm.forward(x, input)
+        x = self.addnorm_1.forward(x, input)
         
         y = self.ffn.forward(x)
-        y = self.ffn_addnorm.forward(x, y)
+        y = self.addnorm_2.forward(x, y)
 
         return y
 
@@ -83,4 +83,34 @@ class Encoder():
         output = input
         for _ in range(self.Nx):
             output = self.encoder_block.forward(output)
+        return output
+
+class DecoderBlock():
+    def __init__(self, d_model, d_ff, dk, dv, h):
+        self.mha_1 = MultiHeadAttention(d_model, dk, dv, h)
+        self.addnorm_1 = AddNorm()
+        self.mha_2 = MultiHeadAttention(d_model, dk, dv, h)
+        self.addnorm_2 = AddNorm()
+        self.ffn = FFN(d_model, d_ff)
+        self.addnorm_3 = AddNorm()
+
+    def forward(self, decoder_input, encoder_output, Ty, maskStep):
+        x = decoder_input
+        y = self.mha_1.forward(x, x, x, Ty, maskStep)
+        x = self.addnorm_1.forward(x, y)
+
+        y = self.mha_2.forward(encoder_output, encoder_output, x)
+        x = self.addnorm_2.forward(x, y)
+
+        y = self.ffn.forward(x)
+        x = self.addnorm_3.forward(x, y)
+
+class Decoder():
+    def __init__(self,Nx, decoder_block):
+        self.decoder_block = decoder_block
+        self.Nx = Nx
+    def forward(self, decoder_input, encoder_output, Ty, maskStep):
+        output = decoder_input
+        for _ in range(self.Nx):
+            output = self.decoder_block.forward(output, encoder_output, Ty, maskStep)
         return output
