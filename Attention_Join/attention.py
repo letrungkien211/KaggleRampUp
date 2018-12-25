@@ -1,10 +1,11 @@
 # 
 # Reference: https://arxiv.org/pdf/1409.0473.pdf
 
+from tensorflow import keras
+from keras.models import Model
+from keras.layers import Input, LSTM, Dot, Concatenate, Layer, Embedding, Bidirectional, Dense, Activation, RepeatVector, Lambda
+from keras.activations import softmax
 import tensorflow as tf
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, LSTM, Dot, Concatenate, Layer, Embedding, Bidirectional, Dense, Activation, RepeatVector, Lambda
-from tensorflow.keras.activations import softmax
 import numpy as np
 
 # Attention
