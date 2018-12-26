@@ -1,0 +1,6 @@
+tensorflow
+tensorflow-gpu
+pandas
+Pillow
+keras
+flask
