@@ -13,7 +13,7 @@ class TestAttention(unittest.TestCase):
             256,
             1000,
             1000
-        ) 
+        )
         model.summary()
 
 if __name__ == '__main__':

@@ -1,11 +1,12 @@
 import sys
+from keras.preprocessing.text import Tokenizer
 
 ## Pre process data
 class PreProcess():
     def __init__(self):
         pass
 
-    def prep(self, input_file, num_samples = sys.maxsize, ):
+    def prep(self, input_file, num_samples = sys.maxsize):
         cnt = 0
         input_texts = [] # source sentence
         target_texts = [] # target sentence
@@ -27,4 +28,7 @@ class PreProcess():
                 target_texts.append(target_text)
                 target_texts_inputs.append(target_text_input)
                 cnt+=1
+        
+        ## Tokenizer 
+        tokenizer_inputs = Tokenizer()
         print('# lines loaded: {0}'.format(len(input_texts)))

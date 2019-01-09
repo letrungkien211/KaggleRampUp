@@ -1,10 +1,9 @@
 # 
 # Reference: https://arxiv.org/pdf/1409.0473.pdf
 
-from tensorflow import keras
-from keras.models import Model
-from keras.layers import Input, LSTM, Dot, Concatenate, Layer, Embedding, Bidirectional, Dense, Activation, RepeatVector, Lambda
-from keras.activations import softmax
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, LSTM, Dot, Concatenate, Layer, Embedding, Bidirectional, Dense, Activation, RepeatVector, Lambda
+from tensorflow.keras.activations import softmax
 import tensorflow as tf
 import numpy as np
 
@@ -73,6 +72,8 @@ class InferenceModel():
         self.decoder_model = decoder_model
     
     def predict(self, input_sequence, sos_key, eos_key, max_len = 100):
+        ''' Predict the input sequence
+        '''
         hidden_dim_decoder = self.decoder_model.input_shape[2][1]
         encoder_outputs = self.encoder_model.predict(input_sequence)
         s = np.zeros((1, hidden_dim_decoder))
@@ -82,6 +83,7 @@ class InferenceModel():
         sequence = []
         for _ in range(max_len):
             o, s, c  = self.decoder_model.predict([encoder_outputs, target_seq, s, c])
+            # TODO: Add beam search here based on probability
             pred = np.argmax(o)
             sequence.append(pred)
             if(pred== eos_key):
