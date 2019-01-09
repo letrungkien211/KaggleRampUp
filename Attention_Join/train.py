@@ -46,14 +46,14 @@ with open(args.input_file, encoding='utf-8') as f:
 
             if(len(splits)!=3):
                 continue
-            input_text = splits[0] + ' <cq_separator> ' + splits[1]
+            input_text = splits[0] + ' <cq> ' + splits[1]
             target_text = splits[2] + ' <eos>'  
             target_text_input = '<sos> ' + splits[2] # offset by 1
         else:
             splits =[y for y in [x.strip() for x in line.strip().split('\t')] if y]
             if(len(splits)!=2):
                 continue
-            input_text = splits[0] + ' <cq_separator> ' + splits[1]
+            input_text = splits[0] + ' <cq> ' + splits[1]
             target_text = splits[1] + ' <eos>'  
             target_text_input = '<sos> ' + splits[1] # offset by 1
 
@@ -137,4 +137,4 @@ for i in range(min(20, len(encoder_inputs))):
   output = inference_model.predict(np.array(encoder_inputs[i:i+1]), tokenizer_outputs.word_index['<sos>'], tokenizer_outputs.word_index['<eos>'])
   output_sentences = tokenizer_outputs.sequences_to_texts([list(output)])
   print(output)
-  print(input_texts[i], '<qa_separator>', output_sentences[0])
+  print(input_texts[i], '<qa>', output_sentences[0])
