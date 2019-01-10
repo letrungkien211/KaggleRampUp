@@ -46,6 +46,12 @@ parser.add_argument('--max_output_len', type=int, default=50)
 
 args = parser. parse_args()
 
+args.logs_dir = os.path.join(args.root_dir, 'logs/')
+args.models_dir = os.path.join(args.root_dir, 'models/')
+
+mkdir(args.logs_dir)
+mkdir(args.models_dir)
+
 
 mkdir(args.root_dir)
 # Parameters
@@ -196,11 +202,8 @@ validation_generator = SequenceGenerator(encoder_inputs[num_train:], decoder_inp
 
 print('Start training')
 
-mkdir(os.path.join(args.root_dir, 'logs'))
-mkdir(os.path.join(args.root_dir, 'models/attention/1'))
-
-callbacks = [TensorBoard(os.path.join(args.root_dir, 'logs/attention-{0}'.format(datetime.now().isoformat().replace(':','-').split('.')[0]))),
-            ModelCheckpoint(os.path.join(args.root_dir, 'models/attention/1/weights.{epoch:02d}-{val_loss:.2f}.h5'), save_best_only=True)]
+callbacks = [TensorBoard(os.path.join(args.logs_dir, 'attention-{0}'.format(datetime.now().isoformat().replace(':','-').split('.')[0]))),
+            ModelCheckpoint(os.path.join(args.models_dir, 'weights.{epoch:02d}-{val_loss:.2f}.h5'), save_best_only=True)]
 
 r = model.fit_generator(
     generator=train_generator,
