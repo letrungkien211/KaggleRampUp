@@ -41,8 +41,8 @@ parser.add_argument('--input_format', type=str, default='cqa_triplets',
 parser.add_argument('--initial_epoch', type=int, default=0, required=False)
 
 parser.add_argument('--root_dir', type=str, required=False, default='../data/attention_join/')
-parser.add_argument('--max_input_len', type=int, default=150)
-parser.add_argument('--max_output_len', type=int, default=50)
+parser.add_argument('--max_input_char_len', type=int, default=150)
+parser.add_argument('--max_output_char_len', type=int, default=50)
 
 args = parser. parse_args()
 
@@ -85,7 +85,7 @@ with open(args.input_file, encoding='utf-8') as f:
             target_text = splits[1] + ' <eos>'
             target_text_input = '<sos> ' + splits[1]  # offset by 1
 
-        if(len(input_text) > args.max_input_len or len(target_text) > args.max_output_len):
+        if(len(input_text) > args.max_input_char_len or len(target_text) > args.max_output_char_len):
             continue
 
         input_texts.append(input_text)
