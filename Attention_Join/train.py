@@ -3,6 +3,7 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import Sequence
 from keras.callbacks import TensorBoard, ModelCheckpoint
+from keras.callbacks import Callback, LambdaCallback
 import pickle
 import numpy as np
 from tqdm import tqdm
@@ -174,9 +175,6 @@ class SequenceGenerator(Sequence):
 
         return ([encoder_inputs, decoder_inputs, z, z], decoder_targets_one_hot)
 
-# Create model
-
-
 model, inference_model = ModelFactory.create(
     max_len_input,
     max_len_target,
@@ -203,7 +201,7 @@ validation_generator = SequenceGenerator(encoder_inputs[num_train:], decoder_inp
 print('Start training')
 
 callbacks = [TensorBoard(os.path.join(args.logs_dir, 'attention-{0}'.format(datetime.now().isoformat().replace(':','-').split('.')[0]))),
-            ModelCheckpoint(os.path.join(args.models_dir, 'weights.{epoch:02d}-{val_loss:.2f}.h5'), save_best_only=True)]
+             ModelCheckpoint(os.path.join(args.models_dir, 'weights.{epoch:02d}-{val_loss:.2f}.h5'), save_best_only=True)]
 
 r = model.fit_generator(
     generator=train_generator,
@@ -215,9 +213,7 @@ r = model.fit_generator(
     initial_epoch=args.initial_epoch
     )
 
-
-# for i in range(min(20, len(encoder_inputs))):
-#   output = inference_model.predict(np.array(encoder_inputs[i:i+1]), tokenizer_outputs.word_index['<sos>'], tokenizer_outputs.word_index['<eos>'])
-#   output_sentences = tokenizer_outputs.sequences_to_texts([list(output)])
-#   print(output)
-#   print(input_texts[i], '<qa>', output_sentences[0])
+for i in range(min(20, len(encoder_inputs))):
+  output = inference_model.predict(np.array(encoder_inputs[i:i+1]), tokenizer_outputs.word_index['<sos>'], tokenizer_outputs.word_index['<eos>'])
+  output_sentences = tokenizer_outputs.sequences_to_texts([list(output)])
+  print(input_texts[i], '<qa>', output_sentences[0])
