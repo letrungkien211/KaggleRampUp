@@ -8,5 +8,5 @@ ENV FLASK_APP ./server.py
 ENV FLASK_DEBUG 1
 
 CMD ["python", "server.py", \
-     "--model_path", "./data/inference_data/model-weights-36-0.62.hdf5", \
+     "--model_path", "./data/inference_data/model-weights-33-0.66.hdf5", \
      "--classes_indices", "./data/inference_data/model-classes.json"]

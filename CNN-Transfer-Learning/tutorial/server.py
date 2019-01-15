@@ -89,30 +89,17 @@ def create_app():
     return app
 
 def init():
-    if(args.port==5000):
-        print('skip init')
-        return
-    print('1')
     global MODEL, IMAGE_SIZE, INDEX_TO_LABELS, FEATURE_EXTRACTOR
     MODEL = load_model(args.model_path)
-    print('2')
     MODEL._make_predict_function()
-    print('3')
     FEATURE_EXTRACTOR = FeaturesExtractor(args.image_size+[3,], VGG16, preprocess_input)
-    print('4')
     FEATURE_EXTRACTOR._make_predict_function()
-    print('5')
     IMAGE_SIZE = args.image_size
-    print('6')
     INDEX_TO_LABELS = load_index2labels(args.classes_indices)
-    print('7')
 
     
 if __name__ == "__main__":
     print('Loading keras model and flask')
     init()
-    print('Create flask app')
     app = create_app()
-    print('Run the app')
     app.run(host='0.0.0.0', port=args.port)
-    print('Exit')
